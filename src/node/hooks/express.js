@@ -104,7 +104,13 @@ exports.restartServer = async () => {
         options.ca.push(fs.readFileSync(caFileName));
       }
     }
-
+    const redirectApp = express();
+    const http = require('http');
+    redirectApp.get('*', function(req, res) {  
+      res.redirect('https://' + req.headers.host + req.url);
+    })// set up a route to redirect http to https
+    redirectApp.listen(9001);
+    //now set up the actuall ep server on https
     const https = require('https');
     exports.server = https.createServer(options, app);
   } else {
